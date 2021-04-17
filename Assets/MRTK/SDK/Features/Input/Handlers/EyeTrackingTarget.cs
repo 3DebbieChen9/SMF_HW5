@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using System;
 using UnityEngine.Serialization;
+using TMPro;
 
 namespace Microsoft.MixedReality.Toolkit.Input
 {
@@ -186,6 +187,10 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// </summary>
         public static GameObject SelectedTarget { get; set; }
 
+        public GameObject debugText;
+        public GameObject eyeCursor;
+        public bool staredAt;
+
         #region Focus handling
         protected override void Start()
         {
@@ -193,6 +198,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             IsLookedAt = false;
             LookedAtTarget = null;
             LookedAtEyeTarget = null;
+            staredAt = false;
         }
 
         private void Update()
@@ -278,14 +284,18 @@ namespace Microsoft.MixedReality.Toolkit.Input
             }
         }
 
-        protected void OnEyeFocusStart()
+        protected void OnEyeFocusStart() // 一旦視線開始與該目標的碰撞器相交，便觸發該函式
         {
             lookAtStartTime = DateTime.UtcNow;
             IsLookedAt = true;
             OnLookAtStart.Invoke();
+            eyeCursor.SetActive(true);
+            staredAt = true;
+
+            //debugText.GetComponent<TMP_Text>().text = (staredAt.ToString());
         }
 
-        protected void OnEyeFocusStay()
+        protected void OnEyeFocusStay() // 在視線與該目標的對碰撞器相交該時刻才觸發該函式
         {
             WhileLookingAtTarget.Invoke();
 
@@ -295,17 +305,23 @@ namespace Microsoft.MixedReality.Toolkit.Input
             }
         }
 
-        protected void OnEyeFocusDwell()
+        protected void OnEyeFocusDwell() // 在視線與目標的碰撞器相交指定時間後觸發
         {
             IsDwelledOn = true;
             OnDwell.Invoke();
+
+            //debugText.GetComponent<TMP_Text>().text = (staredAt.ToString());
         }
 
-        protected void OnEyeFocusStop()
+        protected void OnEyeFocusStop() // 一旦視線停止與該目標的碰撞器相交，就會觸發
         {
             IsDwelledOn = false;
             IsLookedAt = false;
             OnLookAway.Invoke();
+            eyeCursor.SetActive(false);
+            staredAt = false;
+
+            //debugText.GetComponent<TMP_Text>().text = (staredAt.ToString());
         }
 
         #endregion 
