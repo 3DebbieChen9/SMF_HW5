@@ -1,4 +1,5 @@
 ﻿using Microsoft.MixedReality.Toolkit.Input;
+using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,14 +22,19 @@ public class CubeMaster : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        fingerVector = new Vector3(0.0f, 0.0f, 0.0f);
     }
 
     // Update is called once per frame
     void Update()
     {
-        //fingerVector = BaseHand.
-        fingerPositionText.GetComponent<TMP_Text>().text = ("()");
+        var handJointSevice = CoreServices.GetInputSystemDataProvider<IMixedRealityHandJointService>();
+        if(handJointSevice != null)
+        {
+            fingerVector = handJointSevice.RequestJointTransform(TrackedHandJoint.IndexTip, Handedness.Right).position;
+        }
+
+        fingerPositionText.GetComponent<TMP_Text>().text = ("Right Index Finger is at\n(x: " + fingerVector.x.ToString("0.000") + ", y: " + fingerVector.y.ToString("0.000") + ", z: " + fingerVector.z.ToString("0.000") + ")");
     }
     public void showCubeColor()
     {
